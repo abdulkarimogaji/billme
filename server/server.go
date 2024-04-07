@@ -9,6 +9,7 @@ import (
 
 	"github.com/abdulkarimogaji/billme/config"
 	"github.com/abdulkarimogaji/billme/db"
+	"github.com/abdulkarimogaji/billme/server/middleware"
 )
 
 type responseData struct {
@@ -44,9 +45,17 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 }
 
 func StartServer() error {
-	server := http.NewServeMux()
-	server.HandleFunc("GET /health", healthCheck)
+	router := http.NewServeMux()
+	router.HandleFunc("GET /health", healthCheck)
 
-	fmt.Printf("Server is running on port %s", config.AppConfig.PORT)
-	return http.ListenAndServe(fmt.Sprintf(":%s", config.AppConfig.PORT), server)
+	fmt.Printf("Server is running on port %s \n", config.AppConfig.PORT)
+
+	stack := middleware.CreateStack(middleware.Logging)
+
+	server := http.Server{
+		Addr:    fmt.Sprintf(":%s", config.AppConfig.PORT),
+		Handler: stack(router),
+	}
+
+	return server.ListenAndServe()
 }
