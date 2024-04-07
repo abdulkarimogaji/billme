@@ -22,6 +22,7 @@ func ConnectDB() error {
 		Addr:                 config.AppConfig.DB_ADDR,
 		DBName:               "billme",
 		AllowNativePasswords: true,
+		ParseTime:            true,
 	}
 	log.Println(dbConfig.FormatDSN())
 	// Get a database handle.
@@ -32,4 +33,8 @@ func ConnectDB() error {
 		return err
 	}
 	return db.Ping()
+}
+
+func (s *DBStorage) Ping() error {
+	return s.DB.Ping()
 }

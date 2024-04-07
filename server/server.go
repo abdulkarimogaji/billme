@@ -5,8 +5,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/abdulkarimogaji/billme/config"
+	"github.com/abdulkarimogaji/billme/db"
 )
 
 type responseData struct {
@@ -15,10 +17,20 @@ type responseData struct {
 }
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
-	resp := responseData{
-		Error:   false,
-		Message: "Health check successful",
+	var resp responseData
+	err := db.Storage.Ping()
+	if err != nil {
+		resp = responseData{
+			Error:   true,
+			Message: "Failed to ping database",
+		}
+	} else {
+		resp = responseData{
+			Error:   false,
+			Message: time.Now().String(),
+		}
 	}
+
 	respByte, err := json.Marshal(&resp)
 	if err != nil {
 		log.Fatalf("error marshalling json %s", err)

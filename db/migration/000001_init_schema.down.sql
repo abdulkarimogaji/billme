@@ -1,0 +1,8 @@
+DROP TABLE IF EXISTS `permissions`;
+DROP TABLE IF EXISTS `invoices`;
+DROP TABLE IF EXISTS `settings`;
+DROP TABLE IF EXISTS `uploads`;
+DROP TABLE IF EXISTS `company_member`;
+DROP TABLE IF EXISTS `companies`;
+DROP TABLE IF EXISTS `products`;
+DROP TABLE IF EXISTS `users`;
