@@ -9,24 +9,21 @@ import (
 
 	"github.com/abdulkarimogaji/billme/config"
 	"github.com/abdulkarimogaji/billme/db"
+	"github.com/abdulkarimogaji/billme/server/api"
 	"github.com/abdulkarimogaji/billme/server/middleware"
 )
 
-type responseData struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-}
-
 func healthCheck(w http.ResponseWriter, r *http.Request) {
-	var resp responseData
+	var resp api.APIResponse
 	err := db.Storage.Ping()
 	if err != nil {
-		resp = responseData{
+		resp = api.APIResponse{
 			Error:   true,
 			Message: "Failed to ping database",
+			Data:    nil,
 		}
 	} else {
-		resp = responseData{
+		resp = api.APIResponse{
 			Error:   false,
 			Message: time.Now().String(),
 		}
@@ -47,6 +44,7 @@ func healthCheck(w http.ResponseWriter, r *http.Request) {
 func StartServer() error {
 	router := http.NewServeMux()
 	router.HandleFunc("GET /health", healthCheck)
+	router.HandleFunc("GET /users", api.GetUsers)
 
 	fmt.Printf("Server is running on port %s \n", config.AppConfig.PORT)
 
