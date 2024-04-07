@@ -1,40 +1,29 @@
 package main
 
 import (
-	"encoding/json"
-	"fmt"
 	"log"
-	"net/http"
+
+	"github.com/abdulkarimogaji/billme/config"
+	"github.com/abdulkarimogaji/billme/db"
+	"github.com/abdulkarimogaji/billme/server"
 )
 
-type responseData struct {
-	Error   bool   `json:"error"`
-	Message string `json:"message"`
-}
-
-func healthCheck(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Inside the health check handler")
-	resp := responseData{
-		Error:   false,
-		Message: "Health check successful",
-	}
-	respByte, err := json.Marshal(&resp)
-	if err != nil {
-		log.Fatalf("error marshalling json %s", err)
-	}
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	_, err = w.Write(respByte)
-	if err != nil {
-		log.Fatalf("error writing response %s", err)
-
-	}
-}
-
 func main() {
-	mux := http.NewServeMux()
-	mux.HandleFunc("GET /health", healthCheck)
+	// load config
+	err := config.LoadConfig()
+	if err != nil {
+		log.Fatalf("Failed to load config %s", err)
+	}
 
-	log.Println("Server is running...")
-	http.ListenAndServe("localhost:4000", mux)
+	// connect db
+	err = db.ConnectDB()
+	if err != nil {
+		log.Fatalf("Failed to connect to db %s", err)
+	}
+
+	// start server
+	err = server.StartServer()
+	if err != nil {
+		log.Fatalf("Failed to start server %s", err)
+	}
 }

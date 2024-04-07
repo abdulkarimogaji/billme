@@ -11,6 +11,9 @@ import (
 type Config struct {
 	PORT                   string        `mapstructure:"PORT"`
 	DB_URI                 string        `mapstructure:"DB_URI"`
+	DB_USER                string        `mapstructure:"DB_USER"`
+	DB_PASSWORD            string        `mapstructure:"DB_PASSWORD"`
+	DB_ADDR                string        `mapstructure:"DB_ADDR"`
 	JWT_SECRET             string        `mapstructure:"JWT_SECRET"`
 	ACCESS_TOKEN_DURATION  time.Duration `mapstructure:"ACCESS_TOKEN_DURATION"`
 	REFRESH_TOKEN_DURATION time.Duration `mapstructure:"REFRESH_TOKEN_DURATION"`
