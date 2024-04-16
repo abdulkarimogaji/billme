@@ -36,6 +36,15 @@ type User struct {
 	UpdatedAt   time.Time `json:"updated_at"`
 }
 
+type CreateUserArgs struct {
+	Username    string `json:"username"`
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	Role        string `json:"role"`
+	Password    string `json:"password"`
+	Status      int    `json:"status"`
+}
+
 func getWhereQuery(f GetUserFilters) string {
 	conditions := []string{}
 	if f.ID != 0 {
@@ -96,4 +105,18 @@ func (s *DBStorage) GetUsers(ctx context.Context, params PaginationParams, filte
 	}
 
 	return users, nil
+}
+
+func (s *DBStorage) CreateUser(ctx context.Context, params CreateUserArgs) (int64, error) {
+	stmt, err := s.DB.PrepareContext(ctx, "INSERT INTO users (username, email, phone_number, role, password, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)")
+	if err != nil {
+		return 0, err
+	}
+	defer stmt.Close()
+	result, err := stmt.ExecContext(ctx, &params.Username, &params.Email, &params.PhoneNumber, &params.Role, &params.Password, &params.Status, time.Now(), time.Now())
+	if err != nil {
+		return 0, err
+	}
+
+	return result.LastInsertId()
 }
