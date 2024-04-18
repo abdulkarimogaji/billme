@@ -120,3 +120,20 @@ func (s *DBStorage) CreateUser(ctx context.Context, params CreateUserArgs) (int6
 
 	return result.LastInsertId()
 }
+
+func (s *DBStorage) DeleteUser(ctx context.Context, user_id int) error {
+	stmt, err := s.DB.PrepareContext(ctx, "DELETE FROM users WHERE id = ?")
+	if err != nil {
+		return err
+	}
+
+	_, err = stmt.ExecContext(ctx, user_id)
+	return err
+}
+
+func (s *DBStorage) GetUser(ctx context.Context, user_id int) (User, error) {
+	var user User
+	row := s.DB.QueryRowContext(ctx, "SELECT * FROM users WHERE id = ?", &user_id)
+	err := row.Scan(&user)
+	return user, err
+}
